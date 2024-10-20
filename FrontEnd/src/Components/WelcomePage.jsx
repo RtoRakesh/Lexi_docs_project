@@ -63,7 +63,6 @@ const WelcomePage = () => {
             Enter LaxiDocs
           </Button>
 
-          {/* Make sure this image adjusts well to screen size */}
           <Image
             style={{
               display: "block",
@@ -71,7 +70,7 @@ const WelcomePage = () => {
               marginRight: "auto",
               height: "auto",
             }}
-            boxSize={{ base: "50vw", md: "30vw" }} // Adjust image size for smaller screens
+            boxSize={{ base: "50vw", md: "30vw" }}
             src={docManage2}
             alt="doc"
           />
@@ -83,9 +82,8 @@ const WelcomePage = () => {
           minWidth="max-content"
           alignItems="center"
           gap="2"
-          flexDirection={{ base: "column", md: "row" }} // Stack vertically on mobile, row on desktop
-          p="4" // Add padding for better spacing
-          backgroundColor="gray.100" // Added background color for better footer visibility
+          flexDirection={{ base: "column", md: "row" }}
+          backgroundColor="gray.100"
         >
           <Flex>
             <Image boxSize="30px" src={logo} alt="Logo" />
