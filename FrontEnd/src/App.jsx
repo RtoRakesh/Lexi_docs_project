@@ -1,9 +1,11 @@
-import WelcomePage from "./Components/WelcomePage";
+import Register from "./Components/Authentication/Register";
+import WelcomePage from "./Components/WelcomePage/WelcomePage";
 
 function App() {
   return (
     <>
-      <WelcomePage />
+      <Register />
+      {/* <WelcomePage /> */}
     </>
   );
 }
