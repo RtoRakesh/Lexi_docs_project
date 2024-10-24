@@ -1,11 +1,13 @@
-import Register from "./Components/Authentication/Register";
-import WelcomePage from "./Components/WelcomePage/WelcomePage";
+import Footer from "./Components/WelcomePage/Footer";
+import Navbar from "./Components/WelcomePage/Navbar";
+import AllRoutes from "./Routers/AllRoutes";
 
 function App() {
   return (
     <>
-      <Register />
-      {/* <WelcomePage /> */}
+      <Navbar />
+      <AllRoutes />
+      <Footer />
     </>
   );
 }

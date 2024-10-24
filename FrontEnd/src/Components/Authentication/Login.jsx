@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import axios from "axios";
 import {
   Box,
   Button,
@@ -9,15 +8,15 @@ import {
   Input,
   InputGroup,
   InputRightElement,
+  Text,
   useToast,
 } from "@chakra-ui/react";
-import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../Context/AuthContextProvider";
 
-const Register = () => {
-  const [username, setUsername] = useState("");
+const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const navigate = useNavigate();
+  const { login } = useAuth();
   const toast = useToast();
 
   const [show, setShow] = useState(false);
@@ -27,26 +26,34 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const info = {
-        id: Date.now(),
-        Username: username,
-        Email: email,
-        Password: password,
-      };
-      const res = await axios.post("http://localhost:3000/users", info);
-      //console.log(res.data);
+      if (!email || !password) {
+        throw new Error("Email and password are required.");
+      }
+      const userInfo = await login(email, password);
+
+      console.log(userInfo);
+
+      if (!userInfo) {
+        throw new Error("Invalid email or password.");
+      }
       toast({
-        title: "Register successful.",
+        title: "Login successful.",
         status: "success",
         duration: 3000,
         isClosable: true,
       });
-      navigate("/login");
     } catch (err) {
       console.error(err);
+      toast({
+        title: "Login failed.",
+        description:
+          err.response?.data?.message || err.message || "An error occurred.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
     }
   };
-
   return (
     <>
       <Box
@@ -64,23 +71,16 @@ const Register = () => {
           width={{
             base: "80vw",
             sm: "60vw",
-            md: "50vw",
-            lg: "38vw",
-            xl: "28vw",
+            md: "40vw",
+            lg: "35vw",
+            xl: "25vw",
           }}
           height="auto"
           p={{ base: "4", md: "6" }}
         >
-          <Heading pb="4">Register</Heading>
+          <Heading pb="4">Login </Heading>
 
           <FormControl as="form" isRequired onSubmit={handleSubmit}>
-            <FormLabel>Username</FormLabel>
-            <Input
-              placeholder="Enter Username"
-              mb="4"
-              onChange={(e) => setUsername(e.target.value)}
-            />
-
             <FormLabel>Email</FormLabel>
             <Input
               type="email"
@@ -112,6 +112,7 @@ const Register = () => {
             >
               Submit
             </Button>
+            <Text pt="6">Already have an account? Login here</Text>
           </FormControl>
         </Box>
       </Box>
@@ -119,4 +120,4 @@ const Register = () => {
   );
 };
 
-export default Register;
+export default Login;

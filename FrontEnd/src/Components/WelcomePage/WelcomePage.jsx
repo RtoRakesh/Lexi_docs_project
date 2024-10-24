@@ -13,13 +13,10 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
-import Navbar from "./Navbar";
-import Footer from "./Footer";
 
 const WelcomePage = () => {
   return (
     <>
-      <Navbar />
       <main
         style={{
           textAlign: "center",
@@ -48,7 +45,6 @@ const WelcomePage = () => {
           />
         </Box>
       </main>
-      <Footer />
     </>
   );
 };
