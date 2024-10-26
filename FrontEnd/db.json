@@ -1,28 +1,28 @@
 {
   "users": [
     {
-      "id": "1729530860169",
-      "Username": "rakesh123",
-      "Email": "rakesh@gmail.com",
-      "Password": "rakesh@123"
-    },
-    {
-      "id": "1729759401037",
-      "Username": "12345",
-      "Email": "12345@gmail.com",
-      "Password": "12345"
-    },
-    {
-      "id": "1729759665812",
-      "Username": "12",
-      "Email": "13@gmail.com",
-      "Password": "12"
-    },
-    {
-      "id": 1729778658877,
-      "Username": "1234",
-      "Email": "1234@gmail.com",
-      "Password": "1234"
+      "id": "1",
+      "username": "Rakesh123",
+      "email": "rakesh123@gmail.com",
+      "password": "Rakesh123",
+      "documents": [
+        {
+          "id": "1",
+          "title": "Project Plan",
+          "content": "Initial content of the document goes here..."
+        },
+        {
+          "id": "2",
+          "title": "Meeting Notes",
+          "content": "Notes from the last meeting..."
+        },
+        {
+          "id": 1729946847528,
+          "title": "New notion doc",
+          "content": ""
+        }
+      ],
+      "projects": []
     }
   ]
 }
