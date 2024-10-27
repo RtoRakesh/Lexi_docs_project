@@ -13,8 +13,20 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../Context/AuthContextProvider";
 
 const WelcomePage = () => {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+
+  const handleClick = () => {
+    if (!user) {
+      navigate("/login");
+    } else {
+      navigate("/documents");
+    }
+  };
   return (
     <>
       <main
@@ -28,7 +40,12 @@ const WelcomePage = () => {
             LaxiDocs is the connected workspace where better, faster work
             happens.
           </Text>
-          <Button leftIcon={<ArrowForwardIcon />} bg="white" border="1px solid">
+          <Button
+            leftIcon={<ArrowForwardIcon />}
+            bg="white"
+            border="1px solid"
+            onClick={handleClick}
+          >
             Enter LaxiDocs
           </Button>
 

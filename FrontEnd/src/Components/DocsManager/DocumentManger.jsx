@@ -172,10 +172,17 @@ const DocumentManager = () => {
           onDelete={handleDeleteDocument}
         />
       </Box>
-      <Box flex="3" p={4} bg="white" borderRadius="md" boxShadow="lg">
+      <Box
+        flex="3"
+        p={4}
+        bg="white"
+        borderRadius="md"
+        boxShadow="lg"
+        minH="80vh"
+      >
         {currentDocument ? (
           <Box>
-            <Heading size="md" mb={4}>
+            <Heading size="md" mb={4} color="#3498DB">
               {currentDocument.title}
             </Heading>
             <TextEditor
@@ -185,7 +192,7 @@ const DocumentManager = () => {
           </Box>
         ) : previewDocument ? (
           <Box>
-            <Heading size="md" mb={4}>
+            <Heading size="md" mb={4} color="#3498DB">
               {previewDocument.title}
             </Heading>
             <Box
