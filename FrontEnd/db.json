@@ -22,7 +22,35 @@
           "content": ""
         }
       ],
-      "projects": []
+      "projects": [
+        {
+          "id": "1",
+          "title": "Project 1",
+          "description": "description of the Project goes here...",
+          "tasks": [
+            {
+              "id": "1",
+              "title": "task 1",
+              "description": " Task description of the Project goes here..."
+            },
+            {
+              "id": 1730221763676,
+              "title": "Task 2",
+              "description": "Description"
+            }
+          ]
+        },
+        {
+          "id": "2",
+          "title": "Project 2",
+          "description": "any description of the Project goes here..."
+        },
+        {
+          "id": 1730218802731,
+          "title": "project 3",
+          "description": "Description"
+        }
+      ]
     }
   ]
 }

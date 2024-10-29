@@ -12,6 +12,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { useAuth } from "../../Context/AuthContextProvider";
+import { Link } from "react-router-dom";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -112,7 +113,15 @@ const Login = () => {
             >
               Submit
             </Button>
-            <Text pt="6">Already have an account? Login here</Text>
+            <Text pt="6">
+              Already have an account?{" "}
+              <Link
+                to="/register"
+                style={{ color: "teal", fontWeight: "bold" }}
+              >
+                Signup here
+              </Link>
+            </Text>
           </FormControl>
         </Box>
       </Box>

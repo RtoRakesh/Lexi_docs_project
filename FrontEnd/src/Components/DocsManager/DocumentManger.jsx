@@ -38,7 +38,7 @@ const DocumentManager = () => {
   const [deleteId, setDeleteId] = useState(null);
   const { user } = useAuth();
   const toast = useToast();
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen, onOpen, onClose } = useDisclosure(); //isOpen is If true, the modal will be open.nad onOpen and onClose will control true or false value of isOpen
   const cancelRef = React.useRef();
 
   const fetchDocuments = async () => {
