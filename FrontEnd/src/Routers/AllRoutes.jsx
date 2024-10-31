@@ -4,7 +4,7 @@ import WelcomePage from "../Components/WelcomePage/WelcomePage";
 import Login from "../Components/Authentication/Login";
 import Register from "../Components/Authentication/Register";
 import DocumentManger from "../Components/DocsManager/DocumentManger";
-import AddTaskModel from "../Components/ProjectManger/AddTaskModel";
+import AppLayout from "../Components/ProjectManger/AppLayout";
 
 const AllRoutes = () => {
   return (
@@ -13,7 +13,7 @@ const AllRoutes = () => {
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/documents" element={<DocumentManger />} />
-      <Route path="/project" element={<AddTaskModel />} />
+      <Route path="/projects" element={<AppLayout />} />
     </Routes>
   );
 };

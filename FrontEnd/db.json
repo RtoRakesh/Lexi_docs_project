@@ -31,12 +31,30 @@
             {
               "id": "1",
               "title": "task 1",
-              "description": " Task description of the Project goes here..."
+              "description": " Task description of the Project goes here...",
+              "stage": "Requested",
+              "order": "1"
             },
             {
-              "id": 1730221763676,
+              "id": "2",
               "title": "Task 2",
-              "description": "Description"
+              "description": "Description Task 2",
+              "stage": "To do",
+              "order": "2"
+            },
+            {
+              "id": "3",
+              "title": "Task 3",
+              "description": "Description Task 3",
+              "stage": "Doing",
+              "order": "1"
+            },
+            {
+              "id": "4",
+              "title": "Task 4",
+              "description": "Description Task 4",
+              "stage": "Done",
+              "order": "2"
             }
           ]
         },
