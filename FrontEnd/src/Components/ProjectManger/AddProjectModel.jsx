@@ -16,11 +16,11 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useAuth } from "../../Context/AuthContextProvider";
 
-const AddProjectModel = ({ edit = false }) => {
+const AddProjectModel = ({ isOpen, onClose }) => {
   const [projects, setProjects] = useState(null);
   const [title, setTitle] = useState("");
   const [desc, setDesc] = useState("");
-  const { isOpen, onOpen, onClose } = useDisclosure();
+
   const { user } = useAuth();
 
   useEffect(() => {
@@ -54,7 +54,6 @@ const AddProjectModel = ({ edit = false }) => {
 
   return (
     <>
-      <Button onClick={onOpen}>Open</Button>
       <Modal isOpen={isOpen} onClose={onClose} isCentered>
         <ModalOverlay />
         <ModalContent>
