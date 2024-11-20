@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useState } from "react";
-
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
@@ -11,22 +10,27 @@ export const AuthContextProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
-      const res = await axios.get(`http://localhost:3000/users`);
-      const userData = res.data.find(
-        (item) => item.email === email && item.password === password
+      const res = await axios.post(
+        "https://lexi-docs-project.onrender.com/login",
+        { email, password }
       );
-      setUser(userData);
-      console.log(user);
-      if (userData) {
-        navigate("/documents");
-      }
-      return userData;
+      const token = res.data.token;
+
+      localStorage.setItem("authToken", token);
+
+      setUser({ email });
+      navigate("/documents");
+
+      return res.data;
     } catch (err) {
-      console.log("Error occured while login", err);
+      console.error("Error occurred while login", err);
+      throw err;
     }
   };
+
   const logout = () => {
     setUser(null);
+    localStorage.removeItem("authToken");
   };
 
   return (

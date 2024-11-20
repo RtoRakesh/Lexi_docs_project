@@ -30,13 +30,9 @@ const Login = () => {
       if (!email || !password) {
         throw new Error("Email and password are required.");
       }
-      const userInfo = await login(email, password);
 
-      console.log(userInfo);
+      await login(email, password);
 
-      if (!userInfo) {
-        throw new Error("Invalid email or password.");
-      }
       toast({
         title: "Login successful.",
         status: "success",
@@ -55,6 +51,7 @@ const Login = () => {
       });
     }
   };
+
   return (
     <>
       <Box
@@ -79,7 +76,7 @@ const Login = () => {
           height="auto"
           p={{ base: "4", md: "6" }}
         >
-          <Heading pb="4">Login </Heading>
+          <Heading pb="4">Login</Heading>
 
           <FormControl as="form" isRequired onSubmit={handleSubmit}>
             <FormLabel>Email</FormLabel>
@@ -114,7 +111,7 @@ const Login = () => {
               Submit
             </Button>
             <Text pt="6">
-              Already have an account?{" "}
+              Don't have an account?{" "}
               <Link
                 to="/register"
                 style={{ color: "teal", fontWeight: "bold" }}
