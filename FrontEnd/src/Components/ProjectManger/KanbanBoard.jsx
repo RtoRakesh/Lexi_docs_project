@@ -14,66 +14,81 @@ import React, { useEffect, useState } from "react";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import { v4 as uuid } from "uuid"; //for generating unique id's for columns
 import { BsThreeDots } from "react-icons/bs";
-import SideBarComp from "./SideBarComp";
 import AddTaskModel from "./AddTaskModel";
+import { useAuth } from "../../Context/AuthContextProvider";
+const token = localStorage.getItem("token");
 
-const KanbanBoard = () => {
+const KanbanBoard = ({ projectId }) => {
   const [columns, setColumns] = useState({});
   const [projectTitle, setProjectTitle] = useState(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
+  //const { token } = useAuth();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await axios.get("http://localhost:3000/users/1");
-        setProjectTitle(res.data.projects[0].title);
-        //for each column we wre giving id as object with key and data of tasks as a value. for individual ids we have saperate stage and items
+        const res = await axios.get(
+          `https://lexi-docs-project.onrender.com/projects/${projectId}`,
+          {
+            headers: {
+              "x-auth-token": token,
+            },
+          }
+        );
+        console.log(res.data);
+
+        setProjectTitle(res.data.title);
+
         setColumns({
           [uuid()]: {
             name: "Requested",
-            items: res.data.projects[0].tasks
+            items: res.data.tasks
               .filter((task) => task.stage === "Requested")
               .sort((a, b) => a.order - b.order),
           },
           [uuid()]: {
             name: "To do",
-            items: res.data.projects[0].tasks
+            items: res.data.tasks
               .filter((task) => task.stage === "To do")
               .sort((a, b) => a.order - b.order),
           },
           [uuid()]: {
             name: "Doing",
-            items: res.data.projects[0].tasks
+            items: res.data.tasks
               .filter((task) => task.stage === "Doing")
               .sort((a, b) => a.order - b.order),
           },
           [uuid()]: {
             name: "Done",
-            items: res.data.projects[0].tasks
+            items: res.data.tasks
               .filter((task) => task.stage === "Done")
               .sort((a, b) => a.order - b.order),
           },
         });
       } catch (err) {
-        console.log(err);
+        console.error(
+          "Error fetching project data:",
+          err.response?.data || err
+        );
       }
     };
-    fetchData();
-  }, []);
 
-  const onDragEnd = (result, columns, setColumns) => {
+    fetchData();
+  }, [projectId, token]);
+
+  const onDragEnd = async (result, columns, setColumns) => {
     const { source, destination } = result;
     if (!destination) return;
 
     if (source.droppableId !== destination.droppableId) {
-      // Handling item moving to a different column
-      // droppableId tells us which column an item belongs to, allowing us to access and update the correct item list within that column. The draggableId is only used to render each individual task and doesn’t influence the logic within onDragEnd.
       const sourceColumn = columns[source.droppableId];
       const destinationColumn = columns[destination.droppableId];
       const sourceItems = [...sourceColumn.items];
       const destinationItems = [...destinationColumn.items];
-      const [removed] = sourceItems.splice(source.index, 1);
-      destinationItems.splice(destination.index, 0, removed);
+      const [movedItem] = sourceItems.splice(source.index, 1);
+
+      movedItem.stage = destinationColumn.name; // Update task stage
+      destinationItems.splice(destination.index, 0, movedItem);
 
       setColumns({
         ...columns,
@@ -83,12 +98,26 @@ const KanbanBoard = () => {
           items: destinationItems,
         },
       });
+
+      // Update task in the backend
+      try {
+        await axios.patch(
+          `https://lexi-docs-project.onrender.com/projects/${projectId}/tasks/${movedItem.id}`,
+          { stage: destinationColumn.name },
+          {
+            headers: {
+              "x-auth-token": token,
+            },
+          }
+        );
+      } catch (err) {
+        console.error("Error updating task stage:", err.response?.data || err);
+      }
     } else {
-      // Handling item moving within the same column
       const column = columns[source.droppableId];
       const copiedItems = [...column.items];
-      const [removed] = copiedItems.splice(source.index, 1);
-      copiedItems.splice(destination.index, 0, removed);
+      const [movedItem] = copiedItems.splice(source.index, 1);
+      copiedItems.splice(destination.index, 0, movedItem);
 
       setColumns({
         ...columns,
@@ -118,7 +147,6 @@ const KanbanBoard = () => {
         onDragEnd={(result) => onDragEnd(result, columns, setColumns)}
       >
         <Flex gap="4" overflowX="auto">
-          {/* Object.entries() is for Access to Keys and Values as a array  here columnId(from uuid) is key and column is data of indivi task*/}
           {Object.entries(columns).map(([columnId, column]) => (
             <Box
               key={columnId}
@@ -146,9 +174,7 @@ const KanbanBoard = () => {
                 </Flex>
                 <Icon as={BsThreeDots} color="gray.500" />
               </Flex>
-              {/* Droppable is a container where draggable items can be dropped. */}
               <Droppable droppableId={columnId} key={columnId}>
-                {/* provided contains properties and methods to hanlde drag and snapchat tells whether an item is being dragged over the column or not */}
                 {(provided, snapshot) => (
                   <Box
                     ref={provided.innerRef}
@@ -159,12 +185,10 @@ const KanbanBoard = () => {
                     bg={snapshot.isDraggingOver ? "teal.100" : "gray.50"}
                     rounded="md"
                   >
-                    {/* The .map function iterates through each item, rendering a Draggable component for each task */}
                     {column.items.map((item, index) => (
-                      // Draggable allows each item to be moved around within or between columns.
                       <Draggable
                         key={item.id}
-                        draggableId={item.id}
+                        draggableId={item.id.toString()}
                         index={index}
                       >
                         {(provided, snapshot) => (
@@ -174,7 +198,6 @@ const KanbanBoard = () => {
                             {...provided.dragHandleProps}
                             mb="3"
                             p="3"
-                            //condtional rendering for applying colors to tasks
                             bg={
                               column.name === "Requested"
                                 ? "orange.100"
@@ -233,7 +256,7 @@ const KanbanBoard = () => {
           ))}
         </Flex>
       </DragDropContext>
-      <AddTaskModel isOpen={isOpen} onClose={onClose} />
+      <AddTaskModel isOpen={isOpen} onClose={onClose} projectId={projectId} />
     </Box>
   );
 };

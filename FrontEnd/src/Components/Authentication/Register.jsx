@@ -29,7 +29,7 @@ const Register = () => {
     try {
       const info = { username, email, password };
       const res = await axios.post(
-        "https://lexi-docs-project.onrender.com/register",
+        "https://lexi-docs-project.onrender.com/api/auth/register",
         info
       );
 

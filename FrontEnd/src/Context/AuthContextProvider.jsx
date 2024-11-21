@@ -11,12 +11,12 @@ export const AuthContextProvider = ({ children }) => {
   const login = async (email, password) => {
     try {
       const res = await axios.post(
-        "https://lexi-docs-project.onrender.com/login",
+        "https://lexi-docs-project.onrender.com/api/auth/login",
         { email, password }
       );
       const token = res.data.token;
 
-      localStorage.setItem("authToken", token);
+      localStorage.setItem("token", token);
 
       setUser({ email });
       navigate("/documents");

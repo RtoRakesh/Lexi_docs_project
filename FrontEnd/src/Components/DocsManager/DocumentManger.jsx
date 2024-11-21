@@ -41,11 +41,16 @@ const DocumentManager = () => {
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure(); //isOpen is If true, the modal will be open.nad onOpen and onClose will control true or false value of isOpen
   const cancelRef = React.useRef();
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    console.error("No token found. Please login again.");
+  }
 
   const fetchDocuments = async () => {
     try {
-      const res = await axios.get(`${baseUrl}/documents`, {
-        headers: { "x-auth-token": user.token },
+      const res = await axios.get(`${baseUrl}/api/documents`, {
+        headers: { "x-auth-token": token },
       });
       setDocuments(res.data.documents);
     } catch (err) {
@@ -72,9 +77,9 @@ const DocumentManager = () => {
   const handleCreate = async () => {
     try {
       const res = await axios.post(
-        `${baseUrl}/documents`,
+        `${baseUrl}/api/documents`,
         { title: newDocumentTitle, content: "" },
-        { headers: { "x-auth-token": user.token } }
+        { headers: { "x-auth-token": user.token || token } }
       );
       setDocuments([...documents, res.data.newDoc]);
       toast({
@@ -101,9 +106,9 @@ const DocumentManager = () => {
   const handleSaveContent = async (content) => {
     try {
       const res = await axios.put(
-        `${baseUrl}/documents/${currentDocument._id}`,
+        `${baseUrl}/api/documents/${currentDocument._id}`,
         { title: currentDocument.title, content },
-        { headers: { "x-auth-token": user.token } }
+        { headers: { "x-auth-token": user.token || token } }
       );
       const updatedDocuments = documents.map((doc) =>
         doc._id === res.data.updatedDocument._id
@@ -143,8 +148,8 @@ const DocumentManager = () => {
 
   const handleDelete = async () => {
     try {
-      await axios.delete(`${baseUrl}/documents/${deleteId}`, {
-        headers: { "x-auth-token": user.token },
+      await axios.delete(`${baseUrl}/api/documents/${deleteId}`, {
+        headers: { "x-auth-token": user.token || token },
       });
       const filteredDocuments = documents.filter((doc) => doc._id !== deleteId);
       setDocuments(filteredDocuments);
