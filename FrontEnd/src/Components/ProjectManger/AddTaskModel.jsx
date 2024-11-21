@@ -10,92 +10,84 @@ import {
   ModalHeader,
   ModalOverlay,
   Textarea,
-  useDisclosure,
 } from "@chakra-ui/react";
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useAuth } from "../../Context/AuthContextProvider";
+const token = localStorage.getItem("token");
 
-const AddTaskModel = ({ projectId = "2", isOpen, onClose }) => {
-  const [projects, setProjects] = useState(null);
+const AddTaskModel = ({ projectId, isOpen, onClose }) => {
   const [title, setTitle] = useState("");
   const [desc, setDesc] = useState("");
+
   const { user } = useAuth();
-
-  useEffect(() => {
-    const fetchProjects = async () => {
-      try {
-        const res = await axios.get(`http://localhost:3000/users/1`);
-        setProjects(res.data.projects);
-
-        // setTitle(res.data.projects[0].title);
-        // setDesc(res.data.projects[0].description);
-      } catch (err) {
-        console.log(err);
-      }
-    };
-
-    fetchProjects();
-  }, []);
-  console.log(projects);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const newTask = { id: Date.now(), title: title, description: desc };
 
-    const updatedTasks = projects.map((project) =>
-      project.id == projectId
-        ? { ...project, tasks: [...project?.tasks, newTask] }
-        : project
-    );
     try {
-      const resp = await axios.patch("http://localhost:3000/users/1", {
-        projects: updatedTasks,
-      });
-      console.log(resp.data);
+      const newTask = {
+        title,
+        description: desc,
+      };
+
+      const res = await axios.post(
+        `https://lexi-docs-project.onrender.com/projects/${projectId}/tasks`,
+        newTask,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "x-auth-token": token, // Use token for user authentication
+          },
+        }
+      );
+
+      console.log("Task added successfully:", res.data);
+      setTitle("");
+      setDesc("");
+      onClose(); // Close modal after successful task addition
     } catch (err) {
-      console.log(err);
+      console.error("Error adding task:", err.response?.data || err);
     }
   };
 
   return (
-    <>
-      <Modal isOpen={isOpen} onClose={onClose} isCentered>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Add a new Task</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <FormControl as="form" isRequired onSubmit={handleSubmit}>
-              <FormLabel>Title</FormLabel>
-              <Input
-                type="text"
-                placeholder="Add the Project Title"
-                mb="4"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-              />
+    <Modal isOpen={isOpen} onClose={onClose} isCentered>
+      <ModalOverlay />
+      <ModalContent>
+        <ModalHeader>Add a New Task</ModalHeader>
+        <ModalCloseButton />
+        <ModalBody>
+          <FormControl as="form" isRequired onSubmit={handleSubmit}>
+            <FormLabel>Title</FormLabel>
+            <Input
+              type="text"
+              placeholder="Add the Task Title"
+              mb="4"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+            />
 
-              <FormLabel>Description</FormLabel>
-              <Textarea
-                placeholder="Description goes here"
-                value={desc}
-                onChange={(e) => setDesc(e.target.value)}
-              />
-              <Button
-                mt="2"
-                type="submit"
-                colorScheme="teal"
-                variant="solid"
-                width="100%"
-              >
-                Save
-              </Button>
-            </FormControl>
-          </ModalBody>
-        </ModalContent>
-      </Modal>
-    </>
+            <FormLabel>Description</FormLabel>
+            <Textarea
+              placeholder="Description goes here"
+              value={desc}
+              onChange={(e) => setDesc(e.target.value)}
+            />
+
+            <Button
+              mt="2"
+              type="submit"
+              colorScheme="teal"
+              variant="solid"
+              width="100%"
+            >
+              Save
+            </Button>
+          </FormControl>
+        </ModalBody>
+      </ModalContent>
+    </Modal>
   );
 };
 

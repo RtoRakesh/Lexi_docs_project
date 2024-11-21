@@ -16,7 +16,7 @@ projectRouter.get("/", async (req, res) => {
   try {
     const data = await Project.find(
       { user: req.user._id },
-      { task: 0, __v: 0, updatedAt: 0 }
+      { tasks: 0, __v: 0, updatedAt: 0 }
     );
     res.send(data);
   } catch (error) {
@@ -129,7 +129,7 @@ projectRouter.delete("/:id", async (req, res) => {
   }
 });
 
-projectRouter.post("/:id/task", async (req, res) => {
+projectRouter.post("/:id/tasks", async (req, res) => {
   const { id } = req.params;
 
   if (!id) return res.status(500).send("Server error");
@@ -153,9 +153,9 @@ projectRouter.post("/:id/task", async (req, res) => {
         .status(404)
         .send({ error: true, message: "Project not found" });
 
-    const taskCount = project.task.length;
+    const taskCount = project.tasks.length;
     const taskIndex =
-      taskCount > 0 ? Math.max(...project.task.map((o) => o.index)) + 1 : 0;
+      taskCount > 0 ? Math.max(...project.tasks.map((o) => o.index)) + 1 : 0;
 
     const newTask = {
       ...value,
@@ -164,7 +164,7 @@ projectRouter.post("/:id/task", async (req, res) => {
       index: taskIndex,
     };
 
-    project.task.push(newTask);
+    project.tasks.push(newTask);
     await project.save();
 
     res.send(newTask);
@@ -174,7 +174,7 @@ projectRouter.post("/:id/task", async (req, res) => {
 });
 
 // Get a specific task from a project
-projectRouter.get("/:id/task/:taskId", async (req, res) => {
+projectRouter.get("/:id/tasks/:taskId", async (req, res) => {
   const { id, taskId } = req.params;
 
   if (!id || !taskId) return res.status(500).send("Server error");
@@ -190,18 +190,18 @@ projectRouter.get("/:id/task/:taskId", async (req, res) => {
         .status(404)
         .send({ error: true, message: "Project not found" });
 
-    const task = project.task.id(taskId);
-    if (!task)
+    const tasks = project.tasks.id(taskId);
+    if (!tasks)
       return res.status(404).send({ error: true, message: "Task not found" });
 
-    res.send(task);
+    res.send(tasks);
   } catch (error) {
     handleErrors(res, error);
   }
 });
 
 // Update a specific task in a project
-projectRouter.put("/:id/task/:taskId", async (req, res) => {
+projectRouter.put("/:id/tasks/:taskId", async (req, res) => {
   const { id, taskId } = req.params;
 
   if (!id || !taskId) return res.status(500).send("Server error");
@@ -218,7 +218,7 @@ projectRouter.put("/:id/task/:taskId", async (req, res) => {
     const project = await Project.findOne({
       _id: new mongoose.Types.ObjectId(id),
       user: req.user._id,
-      task: { $elemMatch: { _id: new mongoose.Types.ObjectId(taskId) } },
+      tasks: { $elemMatch: { _id: new mongoose.Types.ObjectId(taskId) } },
     });
 
     if (!project)
@@ -228,12 +228,12 @@ projectRouter.put("/:id/task/:taskId", async (req, res) => {
       {
         _id: new mongoose.Types.ObjectId(id),
         user: req.user._id,
-        "task._id": new mongoose.Types.ObjectId(taskId),
+        "tasks._id": new mongoose.Types.ObjectId(taskId),
       },
       {
         $set: {
-          "task.$.title": value.title,
-          "task.$.description": value.description,
+          "tasks.$.title": value.title,
+          "tasks.$.description": value.description,
         },
       }
     );
@@ -245,7 +245,7 @@ projectRouter.put("/:id/task/:taskId", async (req, res) => {
 });
 
 // Delete a task from a project (only for the logged-in user)
-projectRouter.delete("/:id/task/:taskId", async (req, res) => {
+projectRouter.delete("/:id/tasks/:taskId", async (req, res) => {
   const { id, taskId } = req.params;
 
   if (!id || !taskId) return res.status(500).send("Server error");
@@ -261,12 +261,12 @@ projectRouter.delete("/:id/task/:taskId", async (req, res) => {
         .status(404)
         .send({ error: true, message: "Project not found" });
 
-    const taskIndex = project.task.findIndex((task) => task.id === taskId);
+    const taskIndex = project.tasks.findIndex((task) => task._id === taskId);
 
     if (taskIndex === -1)
       return res.status(404).send({ error: true, message: "Task not found" });
 
-    project.task.splice(taskIndex, 1);
+    project.tasks.splice(taskIndex, 1);
     await project.save();
 
     res.send({ success: true, message: "Task deleted successfully" });
@@ -309,9 +309,9 @@ projectRouter.put(" /:id/todo", async (req, res) => {
       await Project.updateOne(
         {
           _id: mongoose.Types.ObjectId(id),
-          "task._id": mongoose.Types.ObjectId(item.name),
+          "tasks._id": mongoose.Types.ObjectId(item.name),
         },
-        { $set: { "task.$.order": item.order, "task.$.stage": item.stage } }
+        { $set: { "tasks.$.order": item.order, "tasks.$.stage": item.stage } }
       );
     }
 

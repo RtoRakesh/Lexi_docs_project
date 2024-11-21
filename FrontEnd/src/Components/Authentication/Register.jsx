@@ -27,14 +27,12 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const info = {
-        id: Date.now(),
-        Username: username,
-        Email: email,
-        Password: password,
-      };
-      const res = await axios.post("http://localhost:3000/users", info);
-      //console.log(res.data);
+      const info = { username, email, password };
+      const res = await axios.post(
+        "https://lexi-docs-project.onrender.com/api/auth/register",
+        info
+      );
+
       toast({
         title: "Register successful.",
         status: "success",
@@ -44,6 +42,14 @@ const Register = () => {
       navigate("/login");
     } catch (err) {
       console.error(err);
+      toast({
+        title: "Registration failed.",
+        description:
+          err.response?.data?.message || err.message || "An error occurred.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
     }
   };
 

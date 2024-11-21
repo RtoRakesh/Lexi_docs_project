@@ -11,11 +11,12 @@ import React from "react";
 import logo from "../../assets/simple logo for lexi.png";
 import { ArrowForwardIcon } from "@chakra-ui/icons";
 import { useAuth } from "../../Context/AuthContextProvider";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const Navbar = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const toast = useToast();
 
   const handleClick = () => {
@@ -32,6 +33,15 @@ const Navbar = () => {
       navigate("/login");
     }
   };
+
+  const handleKanban = () => {
+    if (!user) {
+      navigate("/login");
+    } else {
+      navigate("/projects");
+    }
+  };
+
   return (
     <nav>
       <Flex
@@ -55,9 +65,16 @@ const Navbar = () => {
         </Flex>
         <Spacer />
         <ButtonGroup gap="2">
-          <Button leftIcon={<ArrowForwardIcon />} bg="white">
-            Enter LaxiDocs
-          </Button>
+          {location.pathname !== "/projects" &&
+            location.pathname !== "/documents" && (
+              <Button
+                leftIcon={<ArrowForwardIcon />}
+                bg="white"
+                onClick={handleKanban}
+              >
+                Enter Kanban Board
+              </Button>
+            )}
         </ButtonGroup>
       </Flex>
     </nav>

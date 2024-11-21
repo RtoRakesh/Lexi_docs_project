@@ -4,7 +4,7 @@ const User = require("../models/userModel");
 const auth = async (req, res, next) => {
   try {
     const token = req.header("x-auth-token");
-    //console.log(token);
+    console.log(token);
 
     //decoding the token for userid
     const decoded = jwt.verify(token, process.env.JWT_SECRET);

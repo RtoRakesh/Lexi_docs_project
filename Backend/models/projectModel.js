@@ -16,7 +16,7 @@ const projectSchema = mongoose.Schema(
       ref: "User",
       required: true,
     },
-    task: [
+    tasks: [
       {
         id: {
           type: Number,

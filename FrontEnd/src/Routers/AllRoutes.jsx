@@ -14,6 +14,7 @@ const AllRoutes = () => {
       <Route path="/register" element={<Register />} />
       <Route path="/documents" element={<DocumentManger />} />
       <Route path="/projects" element={<AppLayout />} />
+      <Route path="/project/:projectId" element={<AppLayout />} />
     </Routes>
   );
 };

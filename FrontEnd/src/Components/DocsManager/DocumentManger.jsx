@@ -27,7 +27,8 @@ import SideBar from "./SideBar";
 import axios from "axios";
 import { useAuth } from "../../Context/AuthContextProvider";
 import TextEditor from "./TextEditor";
-const url = "http://localhost:3000/users";
+
+const baseUrl = "https://lexi-docs-project.onrender.com";
 
 const DocumentManager = () => {
   const [documents, setDocuments] = useState([]);
@@ -40,10 +41,17 @@ const DocumentManager = () => {
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure(); //isOpen is If true, the modal will be open.nad onOpen and onClose will control true or false value of isOpen
   const cancelRef = React.useRef();
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    console.error("No token found. Please login again.");
+  }
 
   const fetchDocuments = async () => {
     try {
-      const res = await axios.get(`http://localhost:3000/users/${user.id}`);
+      const res = await axios.get(`${baseUrl}/api/documents`, {
+        headers: { "x-auth-token": token },
+      });
       setDocuments(res.data.documents);
     } catch (err) {
       console.error("Failed to fetch documents", err);
@@ -56,6 +64,7 @@ const DocumentManager = () => {
       });
     }
   };
+
   useEffect(() => {
     fetchDocuments();
   }, []);
@@ -66,14 +75,13 @@ const DocumentManager = () => {
   };
 
   const handleCreate = async () => {
-    const newDoc = { id: Date.now(), title: newDocumentTitle, content: "" };
-    const updatedDocuments = [...documents, newDoc];
-
     try {
-      await axios.patch(`http://localhost:3000/users/${user.id}`, {
-        documents: updatedDocuments,
-      });
-      setDocuments(updatedDocuments);
+      const res = await axios.post(
+        `${baseUrl}/api/documents`,
+        { title: newDocumentTitle, content: "" },
+        { headers: { "x-auth-token": user.token || token } }
+      );
+      setDocuments([...documents, res.data.newDoc]);
       toast({
         title: "Document created.",
         description: "Your document has been successfully created.",
@@ -96,15 +104,19 @@ const DocumentManager = () => {
   };
 
   const handleSaveContent = async (content) => {
-    const updatedDocuments = documents.map((doc) =>
-      doc.id === currentDocument.id ? { ...doc, content: content } : doc
-    );
     try {
-      await axios.patch(`http://localhost:3000/users/${user.id}`, {
-        documents: updatedDocuments,
-      });
+      const res = await axios.put(
+        `${baseUrl}/api/documents/${currentDocument._id}`,
+        { title: currentDocument.title, content },
+        { headers: { "x-auth-token": user.token || token } }
+      );
+      const updatedDocuments = documents.map((doc) =>
+        doc._id === res.data.updatedDocument._id
+          ? res.data.updatedDocument
+          : doc
+      );
       setDocuments(updatedDocuments);
-      setCurrentDocument((prevDoc) => ({ ...prevDoc, content }));
+      setCurrentDocument(res.data.updatedDocument);
       toast({
         title: "Document updated.",
         description: "Your document content has been successfully saved.",
@@ -135,11 +147,11 @@ const DocumentManager = () => {
   };
 
   const handleDelete = async () => {
-    const filteredDocuments = documents.filter((doc) => doc.id !== deleteId);
     try {
-      await axios.patch(`http://localhost:3000/users/${user.id}`, {
-        documents: filteredDocuments,
+      await axios.delete(`${baseUrl}/api/documents/${deleteId}`, {
+        headers: { "x-auth-token": user.token || token },
       });
+      const filteredDocuments = documents.filter((doc) => doc._id !== deleteId);
       setDocuments(filteredDocuments);
       setIsDeleteOpen(false);
       toast({

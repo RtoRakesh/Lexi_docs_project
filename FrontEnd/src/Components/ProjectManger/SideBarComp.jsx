@@ -11,26 +11,34 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import AddProjectModel from "./AddProjectModel";
+const token = localStorage.getItem("token");
 
 const SideBarComp = () => {
   const [projects, setProjects] = useState([]);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  // Function to fetch project data
-  const projectData = async () => {
+  // Function to fetch projects from the new backend route
+  const fetchProjects = async () => {
     try {
-      const res = await axios.get("http://localhost:3000/users/1");
-      setProjects(res.data.projects);
+      const res = await axios.get(
+        "https://lexi-docs-project.onrender.com/projects",
+        {
+          headers: { "x-auth-token": token },
+        }
+      ); // Updated endpoint
+      console.log(res.data);
+
+      setProjects(res.data); // Assuming the API returns an array of projects
     } catch (err) {
-      console.log(err);
+      console.error("Error fetching projects:", err);
     }
   };
 
   // Load project data on component mount and setup event listener for updates
   useEffect(() => {
-    projectData();
-    document.addEventListener("projectUpdate", projectData);
-    return () => document.removeEventListener("projectUpdate", projectData);
+    fetchProjects();
+    document.addEventListener("projectUpdate", fetchProjects);
+    return () => document.removeEventListener("projectUpdate", fetchProjects);
   }, []);
 
   return (
@@ -63,11 +71,11 @@ const SideBarComp = () => {
 
         {/* Project List */}
         <List spacing="2">
-          {projects.map((project, index) => (
-            <ListItem key={index}>
+          {projects.map((project) => (
+            <ListItem key={project.id}>
               <Box
                 as={Link}
-                to={`/project/${project.id}`}
+                to={`/project/${project._id}`}
                 px="4"
                 py="2"
                 bg="gray.700"
